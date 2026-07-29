@@ -171,7 +171,34 @@ html[data-sidebar='collapsed'] .sb-keluar .sb-label-ciut { display: block; }
 .tb-hamburger:hover { background: var(--surface-2); }
 
 .tb-judul { margin: 0; }
-.tb-cari { width: 280px; flex: 0 1 280px; }
+.tb-cari { position: relative; width: 280px; flex: 0 1 280px; }
+.tb-cari-pop {
+  top: calc(100% + 6px);
+  left: 0;
+  width: min(380px, calc(100vw - 2rem));
+  max-height: 360px;
+  overflow-y: auto;
+}
+
+/* ==========================================================================
+   Komentar tugas dengan mention. Stage 5 (HIM-304).
+   ========================================================================== */
+.mention {
+  color: var(--brand);
+  font-weight: 600;
+  text-decoration: none;
+}
+.mention:hover,
+.mention:focus-visible { text-decoration: underline; }
+
+.komentar-tulis { position: relative; }
+.komentar-mention {
+  top: calc(100% + 4px);
+  left: 0;
+  width: min(320px, calc(100vw - 2rem));
+  max-height: 240px;
+  overflow-y: auto;
+}
 
 .tb-tambah { flex: 0 0 auto; }
 
@@ -909,6 +936,7 @@ html[data-sidebar='collapsed'] .sb-keluar .sb-label-ciut { display: block; }
 .lp-poin > li { display: flex; align-items: flex-start; gap: var(--sp-2); font: 400 14px/22px var(--font-ui); color: var(--text-muted); }
 .lp-poin svg { color: var(--success); margin-top: 3px; }
 .lp-kaki { padding: var(--sp-5) var(--sp-6); border-top: 1px solid var(--border); background: var(--surface); display: flex; gap: var(--sp-3); flex-wrap: wrap; align-items: center; }
+.lp-shot { display: block; width: 100%; height: auto; border: 1px solid var(--border); background: var(--surface-2); }
 
 .lg { min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: var(--sp-6); background: var(--bg); }
 .lg-kartu { width: 100%; max-width: 420px; background: var(--surface); border: 1px solid var(--border); padding: var(--sp-8); }

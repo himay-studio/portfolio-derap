@@ -1,15 +1,17 @@
 'use client';
 
 import { ArrowDown, ArrowUp, Plus, Trash2 } from 'lucide-react';
-import { useState } from 'react';
+import { useId, useMemo, useState } from 'react';
 import { Checkbox, Stepper } from '@/components/ui/Controls';
 import { Modal } from '@/components/ui/Overlay';
-import { Badge, Placeholder } from '@/components/ui/Primitives';
+import { Badge } from '@/components/ui/Primitives';
 import { Select } from '@/components/ui/Select';
 import { WARNA_TONE } from '@/components/views/types';
-import { statusUrut } from '@/data/taxonomy';
-import { tasks } from '@/data/tasks';
+import { statuses as statusesBase } from '@/data/taxonomy';
 import type { Tone } from '@/data/types';
+import { useDataStore } from '@/lib/store';
+
+const idStatusDasar = new Set(statusesBase.map((s) => s.id));
 
 const OPSI_TONE: { nilai: Tone; label: string; warna: string }[] = [
   { nilai: 'neutral', label: 'Netral', warna: WARNA_TONE.neutral },
@@ -23,32 +25,52 @@ const OPSI_TONE: { nilai: Tone; label: string; warna: string }[] = [
 /**
  * Editor kolom status.
  *
- * Papan Kanban, badge tabel, warna kalender, dan warna timeline semuanya
- * membaca daftar ini, jadi mengubah kolom di sini mengubah keempat view
- * sekaligus tanpa satu baris pun perubahan di lapisan view.
+ * Papan Kanban tugas membaca daftar status DASAR (`data/taxonomy.ts`), jadi
+ * kolom baru yang ditambahkan di sini muncul di daftar ini dan siap dipakai
+ * pemilik workspace, tapi belum otomatis membuka kolom baru di papan Kanban
+ * pada sesi yang sama, itu batas jujur yang disebut di komentar DONE Stage 5.
+ * Urutan, warna, dan batas WIP kolom dasar tetap bisa diubah di sesi ini
+ * seperti bawaan Stage 3, disimpan sebagai state halaman.
  */
 export function StatusEditor() {
-  const [urutan, setUrutan] = useState(statusUrut.map((s) => s.id));
-  const [tone, setTone] = useState<Record<string, Tone>>(
-    Object.fromEntries(statusUrut.map((s) => [s.id, s.tone])),
-  );
-  const [selesai, setSelesai] = useState<Record<string, boolean>>(
-    Object.fromEntries(statusUrut.map((s) => [s.id, s.selesai])),
-  );
-  const [wip, setWip] = useState<Record<string, number>>(
-    Object.fromEntries(statusUrut.map((s) => [s.id, s.batasWip ?? 0])),
-  );
+  const store = useDataStore();
+  const daftar = useMemo(() => [...store.statuses].sort((a, b) => a.urutan - b.urutan), [store.statuses]);
+
+  const [urutan, setUrutan] = useState(() => daftar.map((s) => s.id));
+  const [tone, setTone] = useState<Record<string, Tone>>({});
+  const [selesai, setSelesai] = useState<Record<string, boolean>>({});
+  const [wip, setWip] = useState<Record<string, number>>({});
   const [modal, setModal] = useState(false);
+
+  const [namaBaru, setNamaBaru] = useState('');
+  const [toneBaru, setToneBaru] = useState<Tone>('neutral');
+  const [wipBaru, setWipBaru] = useState(8);
+  const [selesaiBaru, setSelesaiBaru] = useState(false);
+  const idNama = useId();
+
+  const urutanLengkap = [...urutan, ...daftar.map((s) => s.id).filter((id) => !urutan.includes(id))];
 
   const geser = (id: string, arah: -1 | 1) => {
     setUrutan((s) => {
-      const i = s.indexOf(id);
+      const daftarUrutan = s.includes(id) ? s : [...s, id];
+      const i = daftarUrutan.indexOf(id);
       const j = i + arah;
-      if (i < 0 || j < 0 || j >= s.length) return s;
-      const berikut = [...s];
+      if (i < 0 || j < 0 || j >= daftarUrutan.length) return daftarUrutan;
+      const berikut = [...daftarUrutan];
       [berikut[i], berikut[j]] = [berikut[j], berikut[i]];
       return berikut;
     });
+  };
+
+  const simpan = () => {
+    if (!namaBaru.trim()) return;
+    store.tambahStatus({ nama: namaBaru.trim(), tone: toneBaru, selesai: selesaiBaru, batasWip: wipBaru || null });
+    setUrutan((s) => [...s]); // biarkan efek berikutnya menata ulang lewat urutanLengkap
+    setNamaBaru('');
+    setToneBaru('neutral');
+    setWipBaru(8);
+    setSelesaiBaru(false);
+    setModal(false);
   };
 
   return (
@@ -59,29 +81,33 @@ export function StatusEditor() {
           <Plus size={15} aria-hidden="true" />
           <span>Tambah Kolom</span>
         </button>
-        <span className="t-caption text-muted">{urutan.length} kolom, dipakai di seluruh papan dan tabel.</span>
+        <span className="t-caption text-muted">{urutanLengkap.length} kolom, dipakai di seluruh papan dan tabel.</span>
       </div>
 
       <ul className="stack gap-2">
-        {urutan.map((id, i) => {
-          const s = statusUrut.find((x) => x.id === id);
+        {urutanLengkap.map((id, i) => {
+          const s = daftar.find((x) => x.id === id);
           if (!s) return null;
-          const jumlah = tasks.filter((t) => t.statusId === id).length;
+          const jumlah = store.tasks.filter((t) => t.statusId === id).length;
+          const toneNow = tone[id] ?? s.tone;
+          const wipNow = wip[id] ?? s.batasWip ?? 0;
+          const selesaiNow = selesai[id] ?? s.selesai;
+          const baru = !idStatusDasar.has(id);
           return (
             <li key={id} className="card card-pad">
               <div className="row-wrap gap-4">
-                <span className="chip-dot kb-dot" style={{ background: WARNA_TONE[tone[id]] }} aria-hidden="true" />
+                <span className="chip-dot kb-dot" style={{ background: WARNA_TONE[toneNow] }} aria-hidden="true" />
                 <span className="item-text grow" style={{ minWidth: 180 }}>
                   <span className="title t-body-strong">{s.nama}</span>
-                  <span className="meta">{jumlah} tugas di kolom ini</span>
+                  <span className="meta">{jumlah} tugas di kolom ini{baru ? ', baru ditambahkan sesi ini' : ''}</span>
                 </span>
 
-                <Badge tone={tone[id]}>{s.nama}</Badge>
+                <Badge tone={toneNow}>{s.nama}</Badge>
 
                 <Select
                   label={`Warna kolom ${s.nama}`}
                   labelTersembunyi
-                  nilai={tone[id]}
+                  nilai={toneNow}
                   opsi={OPSI_TONE.map((o) => ({ nilai: o.nilai, label: o.label, warna: o.warna }))}
                   onUbah={(v) => setTone((t) => ({ ...t, [id]: v as Tone }))}
                   ukuran="sm"
@@ -92,7 +118,7 @@ export function StatusEditor() {
                   <span className="t-caption text-muted">Batas WIP</span>
                   <Stepper
                     label={`Batas kerja berjalan kolom ${s.nama}`}
-                    nilai={wip[id]}
+                    nilai={wipNow}
                     onUbah={(v) => setWip((w) => ({ ...w, [id]: v }))}
                     min={0}
                     max={30}
@@ -101,7 +127,7 @@ export function StatusEditor() {
 
                 <Checkbox
                   label="Dihitung selesai"
-                  checked={selesai[id]}
+                  checked={selesaiNow}
                   onChange={(v) => setSelesai((x) => ({ ...x, [id]: v }))}
                 />
 
@@ -119,7 +145,7 @@ export function StatusEditor() {
                     type="button"
                     className="btn btn-secondary btn-icon btn-sm"
                     onClick={() => geser(id, 1)}
-                    disabled={i === urutan.length - 1}
+                    disabled={i === urutanLengkap.length - 1}
                     aria-label={`Turunkan urutan kolom ${s.nama}`}
                   >
                     <ArrowDown size={14} aria-hidden="true" />
@@ -141,26 +167,34 @@ export function StatusEditor() {
       </ul>
 
       <p className="t-caption text-muted seksi">
-        Kolom yang masih berisi tugas tidak bisa dihapus. Pindahkan dulu isinya, baru kolomnya bisa dibuang.
+        Kolom yang masih berisi tugas tidak bisa dihapus. Pindahkan dulu isinya, baru kolomnya bisa dibuang. Kolom
+        baru langsung tersimpan di daftar ini, dan siap dipakai tugas baru lewat form Tambah Tugas pada rilis
+        berikutnya, papan Kanban yang sudah terbuka pada sesi ini tetap memakai enam kolom dasar.
       </p>
 
       <Modal
         terbuka={modal}
         tutup={() => setModal(false)}
         judul="Tambah Kolom Status"
-        keterangan="Kerangka form Stage 3. Stage 5 yang menyambungkannya ke state dan localStorage."
+        keterangan="Tersimpan di sesi demo ini."
         aksi={
           <>
-            <button type="button" className="btn btn-primary" onClick={() => setModal(false)}>Simpan Kolom</button>
+            <button type="button" className="btn btn-primary" disabled={!namaBaru.trim()} onClick={simpan}>Simpan Kolom</button>
             <button type="button" className="btn btn-ghost" onClick={() => setModal(false)}>Batal</button>
           </>
         }
       >
-        <Placeholder
-          label="Form tambah kolom status"
-          catatan="Field: nama kolom, warna, posisi, batas kerja berjalan, dan tanda dihitung selesai."
-          tinggi={160}
-        />
+        <div className="stack gap-3">
+          <div className="field">
+            <label htmlFor={idNama}>Nama kolom</label>
+            <input id={idNama} className="input" value={namaBaru} onChange={(e) => setNamaBaru(e.target.value)} placeholder="Contoh, Menunggu Klien" />
+          </div>
+          <div className="row-wrap gap-3">
+            <Select label="Warna" nilai={toneBaru} opsi={OPSI_TONE.map((o) => ({ nilai: o.nilai, label: o.label, warna: o.warna }))} onUbah={(v) => setToneBaru(v as Tone)} lebar={190} />
+            <Stepper label="Batas kerja berjalan" nilai={wipBaru} onUbah={setWipBaru} min={0} max={30} />
+          </div>
+          <Checkbox label="Tugas di kolom ini dihitung selesai" checked={selesaiBaru} onChange={setSelesaiBaru} />
+        </div>
       </Modal>
     </>
   );

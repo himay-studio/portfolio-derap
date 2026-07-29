@@ -4,6 +4,7 @@ import { TandaPrioritas, TandaTenggat } from '@/components/views/ItemCard';
 import type { AdapterView } from '@/components/views/types';
 import { projects, proyekById } from '@/data/projects';
 import { sprintById, sprints } from '@/data/sprints';
+import { tasks } from '@/data/tasks';
 import { anggotaById, team } from '@/data/team';
 import { labelById, prioritasById, statusById, statusUrut } from '@/data/taxonomy';
 import type { Proyek, Sprint, Tugas } from '@/data/types';
@@ -30,6 +31,17 @@ const orangRingkas = (id: string | null) => {
   return a ? { id: a.id, nama: a.nama, inisial: a.inisial, warna: a.warna } : null;
 };
 
+/**
+ * Static export mem-pre-render satu halaman per id dasar saja. Tugas, proyek,
+ * dan sprint yang dibuat lewat form demo (Stage 5, lihat `lib/store.tsx`)
+ * TIDAK punya halaman statis sendiri, jadi tautannya ditahan di halaman
+ * daftar supaya tidak pernah 404 (R59). Detail tugas baru tetap bisa dilihat
+ * lewat panel pratinjau (`TugasQuickView`), bukan navigasi halaman penuh.
+ */
+const idTugasDasar = new Set(tasks.map((t) => t.id));
+const idProyekDasar = new Set(projects.map((p) => p.id));
+const idSprintDasar = new Set(sprints.map((s) => s.id));
+
 /* -------------------------------------------------------------------------- */
 /* Tugas. Modul yang paling menuntut, empat view setara.                      */
 /* -------------------------------------------------------------------------- */
@@ -53,7 +65,7 @@ export const adapterTugas: AdapterView<Tugas> = {
       grup: t.statusId,
       mulai: t.mulai,
       tenggat: t.tenggat,
-      href: `/app/tugas/${t.id}/`,
+      href: idTugasDasar.has(t.id) ? `/app/tugas/${t.id}/` : '/app/tugas/#baru',
       prioritas: t.prioritas,
       orang: orangRingkas(t.penanggungJawabId),
       chips: t.labelIds.map((id) => ({ teks: labelById(id)?.nama ?? id })),
@@ -77,8 +89,9 @@ export const adapterTugas: AdapterView<Tugas> = {
       nilaiUrut: (t) => t.judul,
       render: (t) => {
         const p = proyekById(t.proyekId);
+        const href = idTugasDasar.has(t.id) ? `/app/tugas/${t.id}/` : '/app/tugas/#baru';
         return (
-          <Link href={`/app/tugas/${t.id}/`} className="item-text tbl-sel-judul">
+          <Link href={href} className="item-text tbl-sel-judul">
             <span className="title">{t.judul}</span>
             {p ? <span className="meta">{p.nama}</span> : null}
           </Link>
@@ -127,7 +140,8 @@ export const adapterTugas: AdapterView<Tugas> = {
       nilaiUrut: (t) => sprintById(t.sprintId)?.nama ?? 'zz',
       render: (t) => {
         const s = sprintById(t.sprintId);
-        return s ? <Link href={`/app/sprint/${s.slug}/`}>{s.nama}</Link> : <span className="text-muted">Tanpa sprint</span>;
+        if (!s) return <span className="text-muted">Tanpa sprint</span>;
+        return <Link href={idSprintDasar.has(s.id) ? `/app/sprint/${s.slug}/` : '/app/sprint/#baru'}>{s.nama}</Link>;
       },
     },
     {
@@ -200,7 +214,7 @@ export const adapterProyek: AdapterView<Proyek> = {
       grup: k,
       mulai: p.mulai,
       tenggat: p.tenggat,
-      href: `/app/proyek/${p.slug}/`,
+      href: idProyekDasar.has(p.id) ? `/app/proyek/${p.slug}/` : '/app/proyek/#baru',
       badge: { teks: LABEL_KESEHATAN[k], tone: TONE_KESEHATAN[k] },
       orang: orangRingkas(p.pemilikId),
       progres: progresPersen(list),
@@ -222,7 +236,7 @@ export const adapterProyek: AdapterView<Proyek> = {
       wajib: true,
       nilaiUrut: (p) => p.nama,
       render: (p) => (
-        <Link href={`/app/proyek/${p.slug}/`} className="item-text tbl-sel-judul">
+        <Link href={idProyekDasar.has(p.id) ? `/app/proyek/${p.slug}/` : '/app/proyek/#baru'} className="item-text tbl-sel-judul">
           <span className="title">{p.nama}</span>
           <span className="meta">{p.klien}</span>
         </Link>
@@ -334,7 +348,7 @@ export const adapterSprint: AdapterView<Sprint> = {
       grup: s.status,
       mulai: s.mulai,
       tenggat: s.selesai,
-      href: `/app/sprint/${s.slug}/`,
+      href: idSprintDasar.has(s.id) ? `/app/sprint/${s.slug}/` : '/app/sprint/#baru',
       badge: {
         teks: LABEL_SPRINT[s.status],
         tone: s.status === 'berjalan' ? 'info' : s.status === 'selesai' ? 'success' : 'neutral',
@@ -351,7 +365,7 @@ export const adapterSprint: AdapterView<Sprint> = {
       render: (s) => {
         const p = proyekById(s.proyekId);
         return (
-          <Link href={`/app/sprint/${s.slug}/`} className="item-text tbl-sel-judul">
+          <Link href={idSprintDasar.has(s.id) ? `/app/sprint/${s.slug}/` : '/app/sprint/#baru'} className="item-text tbl-sel-judul">
             <span className="title">{s.nama}</span>
             {p ? <span className="meta">{p.nama}</span> : null}
           </Link>

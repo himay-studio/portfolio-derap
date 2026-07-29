@@ -417,6 +417,160 @@ const specs: Spec[] = [
     proyekId: 'p08', sprintId: null, pj: 'u13', status: 'siap', prio: 'rendah',
     labels: ['lb08'], mulai: '2026-07-27', tenggat: '2026-08-07', est: 8, jam: 2,
   },
+
+  /* ---------------- Kedalaman waktu, Stage 5 (HIM-304) ----------------
+     47 tugas Stage 3 semuanya berkumpul di Mei sampai Agustus. Burndown,
+     timeline, kalender, dan beban tim semuanya terlihat palsu kalau tanggal
+     menumpuk di satu jendela sempit, jadi tugas tambahan ini sengaja
+     menjangkau balik ke Februari (sejalan dengan mulainya proyek MJY dan TAL)
+     dan maju sampai September, dan mengisi sprint tambahan di sprints.ts
+     supaya sprint yang SUDAH SELESAI juga punya isi nyata, bukan cangkang
+     kosong. */
+
+  /* NUS Gelombang 1 dan 2, s09 dan s10, sudah selesai */
+  {
+    n: 48, judul: 'Wawancara pemangku kepentingan internal Nusantara Kopi',
+    deskripsi: 'Sepuluh sesi dengan pemilik cabang dan tim operasional, mengumpulkan alasan tiap cabang mempertahankan nama lama.',
+    proyekId: 'p01', sprintId: 's09', pj: 'u12', status: 'selesai', prio: 'sedang',
+    labels: ['lb05'], mulai: '2026-05-11', tenggat: '2026-05-22', est: 20, jam: 22,
+    sub: ['Susun daftar pertanyaan', 'Jadwalkan sepuluh sesi', 'Rekap temuan'], subSelesai: 3,
+  },
+  {
+    n: 49, judul: 'Tiga konsep awal arah identitas',
+    deskripsi: 'Tiga arah visual berbeda dipresentasikan ke klien, satu di antaranya dikembangkan lebih jauh di gelombang berikutnya.',
+    proyekId: 'p01', sprintId: 's10', pj: 'u03', status: 'selesai', prio: 'tinggi',
+    labels: ['lb01'], mulai: '2026-06-01', tenggat: '2026-06-15', est: 28, jam: 30,
+    sub: ['Konsep warisan warung', 'Konsep modern minimalis', 'Konsep warna berani'], subSelesai: 3,
+    komentar: [{ p: 'u01', w: '2026-06-16 10:00', i: 'Klien pilih arah modern minimalis dengan sentuhan warna dari konsep warisan warung.' }],
+  },
+  {
+    n: 50, judul: 'Uji nama dan tagline ke lima kelompok fokus',
+    deskripsi: 'Uji resonansi nama baru dan tiga opsi tagline di lima kota berbeda sebelum dikunci.',
+    proyekId: 'p01', sprintId: 's10', pj: 'u12', status: 'selesai', prio: 'sedang',
+    labels: ['lb05'], mulai: '2026-06-08', tenggat: '2026-06-19', est: 24, jam: 25,
+  },
+
+  /* WPR Sprint 09, s11, sudah selesai */
+  {
+    n: 51, judul: 'Migrasi basis data transaksi ke skema baru',
+    deskripsi: 'Skema lama menyimpan diskon sebagai teks bebas, skema baru memisahkan jenis dan nilai diskon supaya laporan bisa dihitung otomatis.',
+    proyekId: 'p02', sprintId: 's11', pj: 'u08', status: 'selesai', prio: 'tinggi',
+    labels: ['lb03'], mulai: '2026-06-22', tenggat: '2026-07-03', est: 32, jam: 34,
+  },
+  {
+    n: 52, judul: 'Uji regresi cetak struk di sepuluh model printer',
+    deskripsi: 'Sepuluh model printer termal populer di warung mitra, memastikan format struk konsisten di semua model.',
+    proyekId: 'p02', sprintId: 's11', pj: 'u10', status: 'selesai', prio: 'sedang',
+    labels: ['lb04'], mulai: '2026-06-24', tenggat: '2026-07-01', est: 20, jam: 19,
+  },
+
+  /* BSE Sprint 01 selesai, Sprint 02 belum mulai */
+  {
+    n: 53, judul: 'Susun pedoman gaya penulisan dua bahasa',
+    deskripsi: 'Aturan nada bicara, istilah baku, dan penanganan istilah teknis yang tidak diterjemahkan, dipakai seluruh tim penulis konten.',
+    proyekId: 'p03', sprintId: 's12', pj: 'u12', status: 'selesai', prio: 'sedang',
+    labels: ['lb06', 'lb10'], mulai: '2026-06-01', tenggat: '2026-06-12', est: 16, jam: 17,
+  },
+  {
+    n: 54, judul: 'Rencana pengujian aksesibilitas menyeluruh',
+    deskripsi: 'Daftar periksa lengkap sebelum audit dimulai, mencakup kontras, urutan fokus, ARIA, dan navigasi papan ketik di 40 rute.',
+    proyekId: 'p03', sprintId: 's13', pj: 'u10', status: 'backlog', prio: 'tinggi',
+    labels: ['lb04'], mulai: '2026-09-01', tenggat: '2026-09-08', est: 12, jam: 0,
+  },
+  {
+    n: 55, judul: 'Perbaikan seluruh temuan audit aksesibilitas',
+    deskripsi: 'Menunggu hasil audit selesai sebelum bisa dimulai, diperkirakan cukup besar karena situs belum pernah diaudit sebelumnya.',
+    proyekId: 'p03', sprintId: 's13', pj: 'u06', status: 'backlog', prio: 'tinggi',
+    labels: ['lb02', 'lb04'], mulai: '2026-09-08', tenggat: '2026-09-11', est: 24, jam: 0,
+  },
+
+  /* SRR Gelombang Peluncuran, s14, sudah selesai */
+  {
+    n: 56, judul: 'Casting dan izin talent iklan video pendek',
+    deskripsi: 'Tiga talent lokal, kontrak penggunaan gambar untuk televisi dan media sosial selama satu tahun.',
+    proyekId: 'p04', sprintId: 's14', pj: 'u13', status: 'selesai', prio: 'sedang',
+    labels: ['lb01', 'lb08'], mulai: '2026-06-22', tenggat: '2026-06-29', est: 12, jam: 14,
+  },
+  {
+    n: 57, judul: 'Lokasi syuting dan perizinan pasar tradisional',
+    deskripsi: 'Izin syuting di dua pasar tradisional, termasuk kompensasi untuk pedagang yang lapaknya terekam.',
+    proyekId: 'p04', sprintId: 's14', pj: 'u13', status: 'selesai', prio: 'sedang',
+    labels: ['lb08'], mulai: '2026-06-24', tenggat: '2026-07-01', est: 10, jam: 11,
+  },
+
+  /* TAL Sprint 07, s15, sudah selesai jauh di belakang */
+  {
+    n: 58, judul: 'Kerangka arsitektur dasbor dan pilihan tumpukan teknologi',
+    deskripsi: 'Bandingkan tiga pendekatan render peta, pilih yang paling ringan untuk 400 penanda bergerak sekaligus.',
+    proyekId: 'p05', sprintId: 's15', pj: 'u07', status: 'selesai', prio: 'tinggi',
+    labels: ['lb02'], mulai: '2026-03-16', tenggat: '2026-03-27', est: 24, jam: 26,
+    sub: ['Uji render 400 penanda', 'Uji pembaruan tiap 30 detik', 'Putuskan pendekatan final'], subSelesai: 3,
+  },
+  {
+    n: 59, judul: 'Aliran data telemetri pertama dari 20 kendaraan percontohan',
+    deskripsi: 'Uji coba dengan 20 kendaraan sebelum digulirkan ke seluruh 400 armada, memastikan format data konsisten.',
+    proyekId: 'p05', sprintId: 's15', pj: 'u09', status: 'selesai', prio: 'tinggi',
+    labels: ['lb03'], mulai: '2026-03-20', tenggat: '2026-04-03', est: 28, jam: 29,
+  },
+
+  /* KSH Migrasi Tahap 1, s16, sudah selesai (rujukan t039 di gelombang lama) */
+  {
+    n: 60, judul: 'Uji coba migrasi cabang Jakarta di lingkungan salinan',
+    deskripsi: 'Simulasi penuh sebelum migrasi sungguhan, memastikan skrip pemetaan 168 kolom berjalan tanpa galat.',
+    proyekId: 'p06', sprintId: 's16', pj: 'u08', status: 'selesai', prio: 'tinggi',
+    labels: ['lb03', 'lb04'], mulai: '2026-06-22', tenggat: '2026-06-29', est: 20, jam: 21,
+  },
+  {
+    n: 61, judul: 'Pelatihan staf pendaftaran cabang Jakarta',
+    deskripsi: 'Dua sesi untuk 22 staf sebelum migrasi tahap satu, memastikan tidak ada kepanikan di hari pertama sistem baru.',
+    proyekId: 'p06', sprintId: 's16', pj: 'u01', status: 'selesai', prio: 'sedang',
+    labels: ['lb10', 'lb08'], mulai: '2026-06-24', tenggat: '2026-07-01', est: 14, jam: 13,
+  },
+
+  /* MJY Sprint 01, s17, jauh di belakang, Februari */
+  {
+    n: 62, judul: 'Purwarupa absensi lokasi di titik proyek percontohan',
+    deskripsi: 'Uji akurasi deteksi lokasi di satu titik proyek sebelum digulirkan ke 22 titik lainnya.',
+    proyekId: 'p08', sprintId: 's17', pj: 'u07', status: 'selesai', prio: 'tinggi',
+    labels: ['lb02'], mulai: '2026-02-09', tenggat: '2026-02-20', est: 24, jam: 25,
+    sub: ['Uji akurasi GPS dalam ruangan', 'Uji akurasi GPS luar ruangan', 'Putuskan radius toleransi'], subSelesai: 3,
+  },
+  {
+    n: 63, judul: 'Desain awal alur absensi mandor dan pekerja harian',
+    deskripsi: 'Dua peran berbeda, mandor mencatat kehadiran rombongan, pekerja harian mencatat kehadiran sendiri.',
+    proyekId: 'p08', sprintId: 's17', pj: 'u04', status: 'selesai', prio: 'sedang',
+    labels: ['lb01'], mulai: '2026-02-12', tenggat: '2026-02-27', est: 20, jam: 22,
+  },
+
+  /* ADK Sprint 02, s18, belum mulai, backlog jauh ke depan */
+  {
+    n: 64, judul: 'Rancangan halaman detail lowongan dan formulir lamaran',
+    deskripsi: 'Formulir lamaran singkat, maksimal lima langkah, dengan opsi unggah CV atau isi profil manual.',
+    proyekId: 'p07', sprintId: 's18', pj: 'u04', status: 'backlog', prio: 'sedang',
+    labels: ['lb01'], mulai: '2026-08-17', tenggat: '2026-08-28', est: 24, jam: 0,
+  },
+  {
+    n: 65, judul: 'Integrasi verifikasi nomor telepon pelamar',
+    deskripsi: 'Kode OTP lewat SMS sebelum lamaran bisa dikirim, mengurangi lamaran spam dari akun palsu.',
+    proyekId: 'p07', sprintId: 's18', pj: 'u08', status: 'backlog', prio: 'sedang',
+    labels: ['lb03'], mulai: '2026-08-24', tenggat: '2026-09-04', est: 18, jam: 0,
+  },
+
+  /* Dua tugas jauh ke depan, September, belum terikat sprint mana pun,
+     supaya Timeline dan Kalender tetap punya isi setelah semua sprint di
+     atas berakhir. */
+  {
+    n: 66, judul: 'Perencanaan peluncuran bertahap identitas baru per wilayah',
+    deskripsi: 'Sembilan wilayah, dimulai dari cabang dengan trafik tertinggi, jarak dua minggu antar gelombang wilayah.',
+    proyekId: 'p01', sprintId: null, pj: 'u13', status: 'backlog', prio: 'sedang',
+    labels: ['lb08'], mulai: '2026-08-24', tenggat: '2026-09-18', est: 20, jam: 0,
+  },
+  {
+    n: 67, judul: 'Evaluasi enam bulan pertama dasbor logistik bersama klien',
+    deskripsi: 'Sesi evaluasi penuh membandingkan target awal proyek dengan kondisi nyata setelah enam bulan berjalan.',
+    proyekId: 'p05', sprintId: null, pj: 'u02', status: 'backlog', prio: 'rendah',
+    labels: ['lb08'], mulai: '2026-09-14', tenggat: '2026-09-25', est: 10, jam: 0,
+  },
 ];
 
 urutanCounter = {};

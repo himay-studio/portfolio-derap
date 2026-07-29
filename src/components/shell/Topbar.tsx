@@ -5,10 +5,10 @@ import { Bell, ChevronDown, Menu, Plus } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 import { useState } from 'react';
 import { Avatar } from '@/components/ui/Primitives';
-import { SearchInput } from '@/components/ui/Controls';
 import { useDisclosure } from '@/components/ui/useDisclosure';
 import { penggunaSaatIni } from '@/data/team';
 import { jatuhTempoDalam, tugasTelat } from '@/lib/derived';
+import { GlobalSearch } from './GlobalSearch';
 import { judulRute } from './nav';
 import { MobileNav } from './MobileNav';
 
@@ -23,7 +23,6 @@ import { MobileNav } from './MobileNav';
 export function Topbar() {
   const pathname = usePathname();
   const [navTerbuka, setNavTerbuka] = useState(false);
-  const [cari, setCari] = useState('');
   const menu = useDisclosure();
 
   const telat = tugasTelat().length;
@@ -44,9 +43,7 @@ export function Topbar() {
 
         <h2 className="tb-judul t-body-strong truncate">{judulRute(pathname)}</h2>
 
-        <div className="tb-cari">
-          <SearchInput nilai={cari} onUbah={setCari} label="Cari tugas, proyek, atau anggota" placeholder="Cari tugas atau proyek" />
-        </div>
+        <GlobalSearch />
 
         <span className="grow" />
 

@@ -4,12 +4,13 @@ import { Plus, RotateCcw } from 'lucide-react';
 import { useMemo, useState } from 'react';
 import { DatePicker } from '@/components/ui/DatePicker';
 import { Modal } from '@/components/ui/Overlay';
-import { Placeholder } from '@/components/ui/Primitives';
 import { SearchInput } from '@/components/ui/Controls';
 import { Select } from '@/components/ui/Select';
 import { DataViews } from '@/components/views/DataViews';
-import { tasks } from '@/data/tasks';
+import { TugasFormFields, tugasFormKeData, useTugasForm } from '@/components/forms/TugasForm';
+import { TugasQuickView } from '@/components/tugas/TugasQuickView';
 import { statusById } from '@/data/taxonomy';
+import { penggunaSaatIni } from '@/data/team';
 import {
   adapterTugas,
   opsiAnggota,
@@ -20,6 +21,11 @@ import {
 } from '@/lib/adapters';
 import { selisihHari } from '@/lib/dates';
 import { HARI_INI } from '@/lib/dates';
+import { useDataStore } from '@/lib/store';
+import type { Tugas } from '@/data/types';
+
+const opsiStatusMassal = opsiStatus.filter((o) => o.nilai !== 'semua');
+const opsiPjMassal = opsiAnggota.filter((o) => o.nilai !== 'semua' && o.nilai !== 'kosong');
 
 /**
  * Halaman Tugas.
@@ -29,6 +35,7 @@ import { HARI_INI } from '@/lib/dates';
  * sedang aktif, dan keempat view selalu memandang himpunan yang sama persis.
  */
 export function TugasClient() {
+  const store = useDataStore();
   const [cari, setCari] = useState('');
   const [proyek, setProyek] = useState('semua');
   const [status, setStatus] = useState('semua');
@@ -37,10 +44,16 @@ export function TugasClient() {
   const [sprint, setSprint] = useState('semua');
   const [sebelum, setSebelum] = useState<string | null>(null);
   const [modalTambah, setModalTambah] = useState(false);
+  const [pratinjauId, setPratinjauId] = useState<string | null>(null);
+
+  const [massal, setMassal] = useState<'status' | 'pj' | null>(null);
+  const [nilaiMassal, setNilaiMassal] = useState('');
+
+  const form = useTugasForm();
 
   const tersaring = useMemo(() => {
     const q = cari.trim().toLowerCase();
-    return tasks.filter((t) => {
+    return store.tasks.filter((t: Tugas) => {
       if (q && !`${t.kode} ${t.judul} ${t.deskripsi}`.toLowerCase().includes(q)) return false;
       if (proyek !== 'semua' && t.proyekId !== proyek) return false;
       if (status !== 'semua' && t.statusId !== status) return false;
@@ -50,7 +63,7 @@ export function TugasClient() {
       if (sebelum && t.tenggat > sebelum) return false;
       return true;
     });
-  }, [cari, proyek, status, prioritas, pj, sprint, sebelum]);
+  }, [store.tasks, cari, proyek, status, prioritas, pj, sprint, sebelum]);
 
   const adaPenyaring =
     cari !== '' || proyek !== 'semua' || status !== 'semua' || prioritas !== 'semua' ||
@@ -65,6 +78,22 @@ export function TugasClient() {
     (t) => !statusById(t.statusId)?.selesai && selisihHari(HARI_INI, t.tenggat) < 0,
   ).length;
 
+  const simpanTugas = () => {
+    if (!form.valid) return;
+    const dibuat = store.tambahTugas(tugasFormKeData(form));
+    setModalTambah(false);
+    setPratinjauId(dibuat.id);
+  };
+
+  const terapkanMassal = (ids: string[], bersihkan: () => void) => {
+    if (!massal || !nilaiMassal) return;
+    if (massal === 'status') store.pindahBanyakStatus(ids, nilaiMassal);
+    if (massal === 'pj') store.tetapkanBanyakPj(ids, nilaiMassal);
+    setMassal(null);
+    setNilaiMassal('');
+    bersihkan();
+  };
+
   return (
     <>
       <DataViews
@@ -72,7 +101,7 @@ export function TugasClient() {
         keterangan="Satu sumber data, empat cara memandang. Pilihan view terakhir kamu diingat."
         adapter={adapterTugas}
         baris={tersaring}
-        ringkasan={`${tersaring.length} dari ${tasks.length} tugas, ${jumlahTelat} telat`}
+        ringkasan={`${tersaring.length} dari ${store.tasks.length} tugas, ${jumlahTelat} telat`}
         aksiUtama={
           // Aksi utama ada di KIRI, sejajar dengan awal isi, konsisten di
           // seluruh aplikasi. Bukan di pojok kanan atas.
@@ -98,37 +127,55 @@ export function TugasClient() {
             ) : null}
           </>
         }
-        aksiMassal={(terpilih, bersihkan) => (
-          <>
-            <button type="button" className="btn btn-secondary btn-sm" onClick={bersihkan}>
-              Pindahkan status
-            </button>
-            <button type="button" className="btn btn-secondary btn-sm" onClick={bersihkan}>
-              Tetapkan penanggung jawab
-            </button>
-            <span className="t-caption">{terpilih.length} dipilih</span>
-          </>
-        )}
+        aksiMassal={(terpilih, bersihkan) => {
+          const ids = terpilih.map((t) => t.id);
+          return (
+            <>
+              {massal === 'status' ? (
+                <>
+                  <Select label="Pindahkan ke status" labelTersembunyi nilai={nilaiMassal} opsi={opsiStatusMassal} onUbah={setNilaiMassal} ukuran="sm" lebar={180} placeholder="Pilih status" />
+                  <button type="button" className="btn btn-primary btn-sm" disabled={!nilaiMassal} onClick={() => terapkanMassal(ids, bersihkan)}>Terapkan</button>
+                  <button type="button" className="btn btn-ghost btn-sm" onClick={() => { setMassal(null); setNilaiMassal(''); }}>Batal</button>
+                </>
+              ) : massal === 'pj' ? (
+                <>
+                  <Select label="Tetapkan penanggung jawab" labelTersembunyi nilai={nilaiMassal} opsi={opsiPjMassal} onUbah={setNilaiMassal} ukuran="sm" lebar={200} placeholder="Pilih anggota" />
+                  <button type="button" className="btn btn-primary btn-sm" disabled={!nilaiMassal} onClick={() => terapkanMassal(ids, bersihkan)}>Terapkan</button>
+                  <button type="button" className="btn btn-ghost btn-sm" onClick={() => { setMassal(null); setNilaiMassal(''); }}>Batal</button>
+                </>
+              ) : (
+                <>
+                  <button type="button" className="btn btn-secondary btn-sm" onClick={() => { setMassal('status'); setNilaiMassal(''); }}>
+                    Pindahkan status
+                  </button>
+                  <button type="button" className="btn btn-secondary btn-sm" onClick={() => { setMassal('pj'); setNilaiMassal(''); }}>
+                    Tetapkan penanggung jawab
+                  </button>
+                </>
+              )}
+              <span className="t-caption">{terpilih.length} dipilih</span>
+            </>
+          );
+        }}
       />
 
       <Modal
         terbuka={modalTambah}
         tutup={() => setModalTambah(false)}
         judul="Tambah Tugas"
-        keterangan="Kerangka form Stage 3. Stage 5 yang menyambungkannya ke state dan localStorage."
+        keterangan={`Dibuat sebagai ${penggunaSaatIni.nama}, tersimpan di sesi demo ini.`}
+        lebar={640}
         aksi={
           <>
-            <button type="button" className="btn btn-primary" onClick={() => setModalTambah(false)}>Simpan Tugas</button>
+            <button type="button" className="btn btn-primary" disabled={!form.valid} onClick={simpanTugas}>Simpan Tugas</button>
             <button type="button" className="btn btn-ghost" onClick={() => setModalTambah(false)}>Batal</button>
           </>
         }
       >
-        <Placeholder
-          label="Form tambah tugas"
-          catatan="Field: judul, deskripsi, proyek, sprint, penanggung jawab, prioritas, label, tanggal mulai, tenggat, estimasi jam. Dropdown memakai Select dan tanggal memakai DatePicker, keduanya sudah tersedia sebagai komponen dasar."
-          tinggi={200}
-        />
+        <TugasFormFields form={form} />
       </Modal>
+
+      <TugasQuickView tugasId={pratinjauId} terbuka={pratinjauId !== null} tutup={() => setPratinjauId(null)} />
     </>
   );
 }
