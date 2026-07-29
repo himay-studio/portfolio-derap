@@ -13,7 +13,7 @@ Dibuat oleh [Himay Studio](https://himaystudio.com).
 | Stage | Peran | Status |
 | --- | --- | --- |
 | 1 | Brand Strategist | Selesai |
-| 2 | Asset Forge (logo dan favicon) | Belum mulai |
+| 2 | Asset Forge (logo dan favicon) | Selesai |
 | 3 | Webapp Architect (arsitektur, scaffold, semua layar, MEDIA.md) | Belum mulai |
 | 4 | Media Producer (generate aset) | Belum mulai |
 | 5 | Frontend Builder (implementasi penuh, data demo, interaksi) | Belum mulai |
