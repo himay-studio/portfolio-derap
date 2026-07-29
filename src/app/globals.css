@@ -1,0 +1,481 @@
+/* ==========================================================================
+   Derap, globals.css
+   Token block copied verbatim from DESIGN.md section 1. Do not invent colors
+   here. If a new color is needed, a new meaning is missing from DESIGN.md.
+   ========================================================================== */
+
+:root {
+  /* ---------- Netral (kanvas dan permukaan) ---------- */
+  --bg:              #F4F6F9;  /* kanvas aplikasi, di belakang semua kartu */
+  --surface:         #FFFFFF;  /* kartu, panel, baris tabel, modal */
+  --surface-2:       #EDF0F5;  /* header tabel, isian halus, baris zebra */
+  --surface-3:       #E4E8EF;  /* kolom Kanban, area tarik lepas, keadaan tekan */
+  --border:          #D5DAE3;  /* garis pemisah dekoratif, batas kartu dan sel tabel */
+  --border-control:  #767F8F;  /* WAJIB untuk batas kontrol: input, checkbox, toggle, radio, stepper */
+
+  /* ---------- Teks ---------- */
+  --text:            #131821;
+  --text-muted:      #4E586A;
+  --text-subtle:     #616B7A;
+  --text-on-brand:   #FFFFFF;
+
+  /* ---------- Brand ---------- */
+  --brand:           #2440BE;
+  --brand-hover:     #1C34A0;
+  --brand-deep:      #16277A;
+  --brand-soft:      #E8EBFA;
+
+  /* ---------- Sidebar (gelap, permanen) ---------- */
+  --sidebar-bg:      #0E1524;
+  --sidebar-surface: #182236;
+  --sidebar-text:    #C3CCDC;
+  --sidebar-muted:   #8792A6;
+  --sidebar-border:  #232E45;
+  --sidebar-active:  #2440BE;
+
+  /* ---------- Semantik status ---------- */
+  --success:         #157F45;
+  --success-soft:    #E3F3EA;
+  --success-on-soft: #0D5D31;
+
+  --warning:         #9A5B00;
+  --warning-soft:    #FBEFD9;
+  --warning-on-soft: #8A5200;
+
+  --danger:          #C0263A;
+  --danger-soft:     #FBE7EA;
+  --danger-on-soft:  #96182B;
+
+  --info:            #1A6FA8;
+  --info-soft:       #E3F0F8;
+  --info-on-soft:    #14567F;
+
+  /* ---------- CTA konversi (halaman landing dan login saja) ---------- */
+  --cta:             #17803D;
+  --cta-hover:       #126430;
+
+  /* ---------- Seri grafik ---------- */
+  --chart-1:         #2440BE;
+  --chart-2:         #0F766E;
+  --chart-3:         #9A5B00;
+  --chart-4:         #7C3AED;
+  --chart-5:         #B83280;
+  --chart-6:         #3F6212;
+  --chart-neutral:   #616B7A;
+  --chart-grid:      #D5DAE3;
+  --chart-fill-warn: #F59E0B;  /* teksnya WAJIB --text, bukan putih */
+
+  /* ---------- Elevasi ---------- */
+  --elev-popover: 0 1px 2px rgba(19, 24, 33, 0.08), 0 8px 24px rgba(19, 24, 33, 0.12);
+  --elev-modal:   0 16px 48px rgba(19, 24, 33, 0.20);
+
+  /* ---------- Bentuk ---------- */
+  --radius: 0;         /* R10. Tidak ada pengecualian di aplikasi ini */
+  --border-width: 1px;
+  --focus-ring: 2px solid var(--brand);
+  --focus-offset: 2px;
+
+  /* ---------- Gerak (R46) ---------- */
+  --dur-fast: 120ms;
+  --dur:      180ms;
+  --dur-slow: 260ms;
+  --ease:     cubic-bezier(0.2, 0.8, 0.2, 1);
+
+  /* ---------- Jarak (basis 4px) ---------- */
+  --sp-1: 4px;  --sp-2: 8px;  --sp-3: 12px; --sp-4: 16px;
+  --sp-5: 20px; --sp-6: 24px; --sp-8: 32px; --sp-10: 40px;
+  --sp-12: 48px; --sp-16: 64px;
+
+  /* ---------- Tata letak ---------- */
+  --sidebar-w: 248px;
+  --sidebar-w-collapsed: 64px;
+  --topbar-h: 56px;
+  --content-max: 1440px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root { --dur-fast: 0ms; --dur: 0ms; --dur-slow: 0ms; }
+}
+
+/* ==========================================================================
+   Reset
+   ========================================================================== */
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html {
+  /* R19: nothing may push the document wider than the viewport. */
+  overflow-x: hidden;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  max-width: 100%;
+}
+
+body {
+  font-family: var(--font-ui);
+  font-size: 14px;
+  line-height: 22px;
+  color: var(--text);
+  background: var(--bg);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-display);
+  letter-spacing: -0.01em;
+  margin: 0;
+}
+
+p { margin: 0; }
+ul, ol { margin: 0; padding: 0; list-style: none; }
+
+img, svg, video { display: block; max-width: 100%; }
+
+a { color: var(--brand); text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+button, input, textarea, select {
+  font: inherit;
+  color: inherit;
+}
+
+button { cursor: pointer; background: none; border: none; padding: 0; }
+
+/* R10: radius 0 everywhere, no exception in this app. */
+* { border-radius: 0 !important; }
+
+/* R38/4.3: focus is never removed, not even on draggable Kanban cards. */
+:focus-visible {
+  outline: var(--focus-ring);
+  outline-offset: var(--focus-offset);
+}
+
+::selection { background: var(--brand-soft); color: var(--brand-deep); }
+
+/* ==========================================================================
+   Skala tipografi (DESIGN.md 3.2 dan 3.3). Jangan mengarang ukuran baru.
+   ========================================================================== */
+
+.t-display-l { font: 700 32px/40px var(--font-display); letter-spacing: -0.02em; }
+.t-display-m { font: 700 26px/34px var(--font-display); letter-spacing: -0.02em; }
+.t-h1        { font: 700 22px/30px var(--font-display); letter-spacing: -0.01em; }
+.t-h2        { font: 600 18px/26px var(--font-display); letter-spacing: -0.01em; }
+.t-h3        { font: 600 16px/24px var(--font-display); letter-spacing: -0.01em; }
+.t-body      { font: 400 14px/22px var(--font-ui); }
+.t-body-strong { font: 500 14px/22px var(--font-ui); }
+.t-ui-sm     { font: 400 13px/20px var(--font-ui); }
+.t-caption   { font: 500 12px/18px var(--font-ui); }
+.t-micro     { font: 600 11px/16px var(--font-ui); text-transform: uppercase; letter-spacing: 0.06em; }
+.t-mono      { font: 500 12px/16px var(--font-mono); letter-spacing: 0.02em; }
+.t-num       { font-variant-numeric: tabular-nums; }
+
+.text-muted  { color: var(--text-muted); }
+.text-subtle { color: var(--text-subtle); }
+
+/* ==========================================================================
+   R50: judul plus label sekunder selalu dua elemen blok terpisah dengan gap.
+   Dua node teks inline yang bersebelahan akan menempel saat dirender.
+   ========================================================================== */
+
+.item-text { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.item-text > .title { display: block; font: 500 13px/20px var(--font-ui); color: var(--text); }
+.item-text > .meta  { display: block; font: 400 11px/16px var(--font-ui); color: var(--text-muted); }
+
+/* Lockup merek. Wordmark dan tagline WAJIB blok terpisah, kalau tidak
+   akan terbaca "DerapRitme kerja tim" dalam satu baris. */
+.lockup { display: inline-flex; align-items: center; gap: 10px; }
+.lockup .lockup-text { display: flex; flex-direction: column; gap: 1px; }
+.lockup .lockup-name { display: block; font: 700 17px/22px var(--font-display); letter-spacing: -0.02em; }
+.lockup .lockup-tagline { display: block; font: 500 10px/14px var(--font-ui); text-transform: uppercase; letter-spacing: 0.08em; }
+
+/* ==========================================================================
+   Utilitas tata letak
+   ========================================================================== */
+
+.stack   { display: flex; flex-direction: column; }
+.row     { display: flex; align-items: center; }
+.row-wrap{ display: flex; align-items: center; flex-wrap: wrap; }
+.grow    { flex: 1 1 auto; min-width: 0; }
+.gap-1 { gap: var(--sp-1); } .gap-2 { gap: var(--sp-2); } .gap-3 { gap: var(--sp-3); }
+.gap-4 { gap: var(--sp-4); } .gap-5 { gap: var(--sp-5); } .gap-6 { gap: var(--sp-6); }
+.gap-8 { gap: var(--sp-8); }
+.truncate { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; }
+
+.sr-only {
+  position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+}
+
+/* ==========================================================================
+   Permukaan
+   ========================================================================== */
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+}
+.card-pad { padding: var(--sp-4); }
+
+.card-head {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  padding: var(--sp-3) var(--sp-4);
+  border-bottom: 1px solid var(--border);
+}
+
+.divider { height: 1px; background: var(--border); border: 0; margin: 0; }
+
+/* ==========================================================================
+   Tombol
+   ========================================================================== */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--sp-2);
+  height: 36px;
+  padding: 0 var(--sp-4);
+  border: 1px solid transparent;
+  font: 500 13px/20px var(--font-ui);
+  white-space: nowrap;
+  transition: background-color var(--dur-fast) var(--ease),
+              border-color var(--dur-fast) var(--ease),
+              color var(--dur-fast) var(--ease);
+}
+.btn:hover { text-decoration: none; }
+.btn[disabled], .btn[aria-disabled='true'] { opacity: 0.55; cursor: not-allowed; }
+
+/* Aksi utama di dalam aplikasi memakai brand, bukan hijau (DESIGN.md 2.5). */
+.btn-primary { background: var(--brand); color: #FFFFFF; }
+.btn-primary:hover { background: var(--brand-hover); }
+
+.btn-secondary {
+  background: var(--surface);
+  color: var(--text);
+  border-color: var(--border-control);
+}
+.btn-secondary:hover { background: var(--surface-2); }
+
+.btn-ghost { background: transparent; color: var(--text-muted); }
+.btn-ghost:hover { background: var(--surface-2); color: var(--text); }
+
+.btn-danger { background: var(--danger); color: #FFFFFF; }
+.btn-danger:hover { background: var(--danger-on-soft); }
+
+/* Hijau R5 HANYA di halaman landing dan login. */
+.btn-cta { background: var(--cta); color: #FFFFFF; height: 44px; padding: 0 var(--sp-6); font-size: 15px; }
+.btn-cta:hover { background: var(--cta-hover); }
+
+.btn-sm { height: 30px; padding: 0 var(--sp-3); font-size: 12px; }
+.btn-icon { width: 36px; padding: 0; }
+.btn-icon.btn-sm { width: 30px; }
+
+/* ==========================================================================
+   Kontrol form. Batas WAJIB --border-control (4.04:1), bukan --border (1.40:1).
+   ========================================================================== */
+
+.field { display: flex; flex-direction: column; gap: var(--sp-1); min-width: 0; }
+.field > label { font: 500 12px/18px var(--font-ui); color: var(--text-muted); }
+
+.input, .textarea {
+  width: 100%;
+  min-height: 36px;
+  padding: 7px var(--sp-3);
+  background: var(--surface);
+  border: 1px solid var(--border-control);
+  color: var(--text);
+  font: 400 13px/20px var(--font-ui);
+  transition: border-color var(--dur-fast) var(--ease);
+}
+.input::placeholder, .textarea::placeholder { color: var(--text-subtle); }
+.input:focus-visible, .textarea:focus-visible { border-color: var(--brand); }
+.textarea { min-height: 88px; resize: vertical; }
+
+.input-search { padding-left: 34px; }
+.search-wrap { position: relative; display: block; min-width: 0; }
+.search-wrap > .search-icon {
+  position: absolute; left: 9px; top: 50%; transform: translateY(-50%);
+  color: var(--text-muted); pointer-events: none;
+}
+
+/* ==========================================================================
+   Badge, chip, tag
+   ========================================================================== */
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px var(--sp-2);
+  font: 600 11px/16px var(--font-ui);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  white-space: nowrap;
+}
+.badge-success { background: var(--success-soft); color: var(--success-on-soft); }
+.badge-warning { background: var(--warning-soft); color: var(--warning-on-soft); }
+.badge-danger  { background: var(--danger-soft);  color: var(--danger-on-soft); }
+.badge-info    { background: var(--info-soft);    color: var(--info-on-soft); }
+.badge-brand   { background: var(--brand-soft);   color: var(--brand-deep); }
+.badge-neutral { background: var(--surface-2);    color: var(--text-muted); }
+/* Satu satunya badge pekat di tabel: Diblokir (DESIGN.md 6.3). */
+.badge-solid-danger { background: var(--danger); color: #FFFFFF; }
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-1);
+  padding: 2px var(--sp-2);
+  border: 1px solid var(--border-control);
+  background: var(--surface);
+  font: 500 12px/18px var(--font-ui);
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+.chip-dot { width: 8px; height: 8px; flex: 0 0 8px; }
+
+/* ==========================================================================
+   Avatar. Persegi, bukan lingkaran (R10 + DESIGN.md 4.1).
+   ========================================================================== */
+
+.avatar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  color: #FFFFFF;
+  font-family: var(--font-display);
+  font-weight: 600;
+  line-height: 1;
+  overflow: hidden;
+  user-select: none;
+}
+.avatar-24 { width: 24px; height: 24px; font-size: 10px; }
+.avatar-32 { width: 32px; height: 32px; font-size: 12px; }
+.avatar-40 { width: 40px; height: 40px; font-size: 15px; }
+.avatar-64 { width: 64px; height: 64px; font-size: 24px; }
+
+.avatar-stack { display: inline-flex; }
+.avatar-stack > * { margin-left: -6px; box-shadow: 0 0 0 1px var(--surface); }
+.avatar-stack > *:first-child { margin-left: 0; }
+
+/* ==========================================================================
+   Batang progres. Persegi, tidak ada cincin bulat (DESIGN.md 4.1).
+   ========================================================================== */
+
+.progress {
+  position: relative;
+  height: 6px;
+  background: var(--surface-3);
+  overflow: hidden;
+}
+.progress > span {
+  display: block;
+  height: 100%;
+  background: var(--brand);
+  transition: width var(--dur) var(--ease);
+}
+.progress-lg { height: 10px; }
+.progress-success > span { background: var(--success); }
+.progress-warn > span    { background: var(--chart-fill-warn); }
+.progress-danger > span  { background: var(--danger); }
+
+/* ==========================================================================
+   Lapisan mengambang. R57: panel tertutup memakai display:none supaya
+   tidak ikut menghitung layout dan tidak bisa menyebabkan overflow.
+   ========================================================================== */
+
+.pop {
+  position: absolute;
+  z-index: 60;
+  min-width: 180px;
+  max-width: calc(100vw - 2rem);   /* R16.1 dan R57, klem viewport wajib */
+  background: var(--surface);
+  border: 1px solid var(--border);
+  box-shadow: var(--elev-popover);
+}
+.pop[hidden] { display: none; }
+.pop-left  { left: 0; }
+.pop-right { right: 0; }
+
+.pop-anim {
+  display: grid;
+  grid-template-rows: 1fr;
+  opacity: 1;
+  transition: grid-template-rows var(--dur) var(--ease), opacity var(--dur) var(--ease);
+}
+.pop-anim > .pop-anim-inner { overflow: hidden; min-height: 0; }
+.pop-enter { grid-template-rows: 0fr; opacity: 0; }
+
+.chevron { transition: transform var(--dur) var(--ease); }
+.chevron-open { transform: rotate(180deg); }
+
+/* ==========================================================================
+   Skeleton
+   ========================================================================== */
+
+.skeleton {
+  background: linear-gradient(90deg, var(--surface-2) 25%, var(--surface-3) 37%, var(--surface-2) 63%);
+  background-size: 400% 100%;
+  animation: skeleton-shift 1.4s ease-in-out infinite;
+}
+@keyframes skeleton-shift {
+  0%   { background-position: 100% 50%; }
+  100% { background-position: 0 50%; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .skeleton { animation: none; }
+}
+
+/* ==========================================================================
+   Placeholder beranotasi (Stage 3). Bukan gambar AI. Diganti Stage 5.
+   ========================================================================== */
+
+.ph {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: var(--sp-1);
+  padding: var(--sp-4);
+  background:
+    repeating-linear-gradient(
+      135deg,
+      var(--surface-2) 0 10px,
+      var(--surface-3) 10px 20px
+    );
+  border: 1px dashed var(--border-control);
+  color: var(--text-muted);
+  min-height: 96px;
+}
+.ph > .ph-label { display: block; font: 600 11px/16px var(--font-ui); text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-muted); }
+.ph > .ph-note  { display: block; font: 400 12px/18px var(--font-ui); color: var(--text-muted); }
+
+/* ==========================================================================
+   R46: transisi antar halaman. 260ms, dan 0ms saat reduced motion.
+   ========================================================================== */
+
+.page-enter { animation: page-in var(--dur-slow) var(--ease) both; }
+@keyframes page-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .page-enter { animation: none; }
+}
+
+/* Ganti view: 180ms, opacity plus translateY(6px). */
+.view-enter { animation: view-in var(--dur) var(--ease) both; }
+@keyframes view-in {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .view-enter { animation: none; }
+}
