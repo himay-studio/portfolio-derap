@@ -20,9 +20,9 @@ export const site = {
 } as const;
 
 /** R36: GTM container id, single config constant. GA4 rides through this container
- *  using the shared measurement property. Meta Pixel/CAPI client code is not wired
- *  on this site (dashboard app, no client fbq/Pixel scaffolding exists), so those
- *  channels stay dormant here regardless of category, out of scope for HIM-356. */
+ *  using the shared measurement property. Meta Pixel (browser) + Meta CAPI (server,
+ *  functions/api/meta-events.ts) client wiring landed HIM-360 via src/lib/analytics.ts
+ *  + src/components/MetaPixelClient.tsx, mounted in src/app/layout.tsx. */
 export const TRACKING = {
   gtmId: 'GTM-WZJZTSKG',
   category: site.category,
