@@ -1,12 +1,19 @@
 import type { Metadata, Viewport } from 'next';
 import Script from 'next/script';
 import { Inter, JetBrains_Mono, Plus_Jakarta_Sans } from 'next/font/google';
-import { site } from '@/data/site';
+import { site, TRACKING } from '@/data/site';
 import './globals.css';
 import './app.css';
 
 /** R36: GTM container shared across himaystudio.com + every portfolio subdomain. */
 const GTM_ID = 'GTM-WZJZTSKG';
+
+/* HIM-356: push the classification dimension onto the dataLayer before GTM's loader
+   runs, so any GTM variable reading it sees the value from the very first event.
+   Absent category means this push is skipped, not sent empty. */
+const CATEGORY_PUSH = TRACKING.category
+  ? `window.dataLayer=window.dataLayer||[];window.dataLayer.push({portfolio_category:${JSON.stringify(TRACKING.category)}});`
+  : '';
 
 const display = Plus_Jakarta_Sans({
   subsets: ['latin'],
@@ -89,7 +96,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           id="gtm-head"
           strategy="afterInteractive"
           dangerouslySetInnerHTML={{
-            __html: `(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','${GTM_ID}');`,
+            __html: `${CATEGORY_PUSH}(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','${GTM_ID}');`,
           }}
         />
         <script dangerouslySetInnerHTML={{ __html: SKRIP_SIDEBAR }} />
