@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from 'next';
 import Script from 'next/script';
 import { Inter, JetBrains_Mono, Plus_Jakarta_Sans } from 'next/font/google';
 import { site, TRACKING } from '@/data/site';
+import { MetaPixelClient } from '@/components/MetaPixelClient';
 import './globals.css';
 import './app.css';
 
@@ -111,6 +112,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             title="Google Tag Manager"
           />
         </noscript>
+        <MetaPixelClient />
         {children}
       </body>
     </html>
